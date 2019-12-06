@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>  
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+    function draw_fractal() {
+        let triangle_coordinates = [];
+        let number_of_iterations = 0;
+        
+        x_0 = parseInt(document.getElementById("x_first_coordinate").value);
+        y_0 = parseInt(document.getElementById("y_first_coordinate").value);
+        x_1 = parseInt(document.getElementById("x_second_coordinate").value);
+        y_1 = parseInt(document.getElementById("y_second_coordinate").value);
+        x_2 = parseInt(document.getElementById("x_third_coordinate").value);
+        y_2 = parseInt(document.getElementById("y_third_coordinate").value);
+
+        triangle_coordinates.push([x_0,y_0],[x_1,y_1],[x_2,y_2])
+        number_of_iterations = parseInt(document.getElementById("number_of_iterations").value);
+
+        var chart = new CanvasJS.Chart("chartContainer", {
+        title:{
+            text: "Sierpinski Triangle"
+        },
+        zoomEnabled: true,
+        data: [{
+            markerSize: 1,
+            type: "scatter",
+            dataPoints: [
+                    { x: triangle_coordinates[0][0], y: triangle_coordinates[0][1] },
+                    { x: triangle_coordinates[1][0], y: triangle_coordinates[1][1] },
+                    { x: triangle_coordinates[2][0], y: triangle_coordinates[2][1] }
+                ]
+            }]
+        });
+
+        chart.render();
+        
+        // init x,y with centroid.
+        let x_in = (x_0 + x_1 + x_2) / 3;
+        let y_in = (y_0 + y_1 + y_2) / 3;
+
+        for(var i=0; i<number_of_iterations; i++) {
+            let next_index = Math.floor(Math.random() * 10) % 3;
+            let curr_vertex = triangle_coordinates[next_index];
+            x_in = (curr_vertex[0] + x_in ) / 2;
+            y_in = (curr_vertex[1] + y_in ) / 2;
+            chart.options.data[0].dataPoints.push({ y: y_in, x: x_in});
+            i++;
+        }
+        var startTime = new Date();
+        chart.render();
+        var endTime = new Date();
+        document.getElementById("timeToRender").innerHTML = "Time to Render: " + (endTime - startTime) + "ms";
+    }
+
+</script>
+</head>
+<body>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <form onsubmit="draw_fractal()">
+        First coordinate (x,y):<br>
+        X: <input type="text" id="x_first_coordinate" value="0"><br>
+        Y:<input type="text" id="y_first_coordinate" value="0"><br>
+        Second coordinate:<br>
+        X:<input type="text" id="x_second_coordinate" value="1"><br>
+        Y:<input type="text" id="y_second_coordinate" value="100"><br>
+        Third coordinate:<br>
+        X:<input type="text" id="x_third_coordinate" value="2"><br>
+        Y:<input type="text" id="y_third_coordinate" value="0"><br>
+        Number of Iterations:<input type="text" id="number_of_iterations" value="100000"><br>
+        <input type="submit" value="Submit">
+      </form> 
+      <span id="timeToRender"></span>
+</body>
+</html>
