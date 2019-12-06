@@ -1,3 +1,3 @@
 # fractal-patterns
 
-## [Sierpinski Triangle](https://github.com/subhendusethi/fractal-patterns/blob/master/sierpinski/index.html)
+## [Sierpinski Triangle](https://subhendusethi.github.io/fractal-patterns/sierpinski/index.html)
