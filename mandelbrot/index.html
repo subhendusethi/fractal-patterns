@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>  
+<script>
+    function madelbrot_iterations(cx, cy, max_iterations) {
+        var x = 0.0;
+        var y = 0.0;
+        var xx = 0;
+        var yy = 0;
+        var xy = 0;
+    
+        var i = max_iterations;
+        while (i-- && xx + yy <= 4) {
+            xy = x * y;
+            xx = x * x;
+            yy = y * y;
+            x = xx - yy + cx;
+            y = xy + xy + cy;
+        }
+        return max_iterations - i;
+    }
+    
+    function setup_canvas() {
+        if(document.getElementsByTagName("canvas") && document.getElementsByTagName("canvas")[0]) {
+            var existing_canvas_element = document.getElementsByTagName("canvas")[0];
+            existing_canvas_element.parentNode.removeChild(existing_canvas_element);
+        } 
+        
+        let canvas = document.createElement('canvas');
+        canvas.height = parseInt(document.getElementById("canvas_height").value);
+        canvas.width = parseInt(document.getElementById("canvas_width").value);
+
+        document.body.insertBefore(canvas, document.getElementById("chart_container"));
+        return canvas;
+    }
+
+    function draw_fractal() {
+        var startTime = new Date();
+        let canvas = setup_canvas();
+        
+        const canvas_height = canvas.height;
+        const canvas_width = canvas.width;
+
+        const x_low = -2;
+        const x_high = 1;
+        const y_low = -1;
+        const y_high = 1;
+        
+        const max_iterations = 1000;
+        
+        var ctx = canvas.getContext('2d');
+        var img = ctx.getImageData(0, 0, canvas_width, canvas_height);
+        var pix = img.data;
+
+        for(var i=0;i<canvas_width;i++) {
+            for(var j=0;j<canvas_height;j++) {
+                const x_in = x_low + (i / canvas_width) * (x_high - x_low);
+                const y_in = y_low + (j / canvas_height) * (y_high - y_low);
+                const madelbrot_iterations_count = madelbrot_iterations(x_in, y_in, max_iterations);
+                var ppos = 4 * (canvas_width * j + i);
+                if(madelbrot_iterations_count > max_iterations) {
+                    pix[ppos] = 0;
+                    pix[ppos + 1] = 0;
+                    pix[ppos + 2] = 0;
+                    pix[ppos + 3] = 255;
+                }
+            }
+        }
+
+        ctx.putImageData(img, 0, 0);
+        var endTime = new Date();
+        document.getElementById("time_to_compute").innerHTML = "Time to Compute: " + (endTime - startTime) + "ms";
+    }
+
+
+</script>
+</head>
+<body>
+    <h1>Mandelbrot Set</h1>
+    <div id="chart_container" style="width: 100%;"></div>
+    <form onsubmit="draw_fractal();return false;">
+        Canvas Height: <input type="text" id="canvas_height" value="600"><br>
+        Canvas Width:<input type="text" id="canvas_width" value="900"><br>
+        <button id ="button" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+    </form> 
+      <span id="time_to_compute"></span>
+</body>
+</html>
